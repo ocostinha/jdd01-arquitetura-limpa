@@ -1,11 +1,9 @@
 package com.alura.arquitetura_limpa.entrypoint.controller;
 
 import com.alura.arquitetura_limpa.core.business.ProdutoBusiness;
-import com.alura.arquitetura_limpa.domain.Produto;
 import com.alura.arquitetura_limpa.entrypoint.controller.dto.ProdutoEntradaDTO;
 import com.alura.arquitetura_limpa.entrypoint.controller.dto.ProdutoSaidaDTO;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,11 +27,8 @@ public class ProdutoController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProdutoSaidaDTO cadastrarProduto(@RequestBody @Valid ProdutoEntradaDTO dto) {
-        Produto produtoASerCadastrado = dto.toDomain();
-        Produto produtoCadastrado = produtoBusiness.cadastrarProduto(produtoASerCadastrado);
-        ProdutoSaidaDTO contratoSaida = new ProdutoSaidaDTO().fromDomain(produtoCadastrado);
-
-        return contratoSaida;
+        return new ProdutoSaidaDTO()
+            .fromDomain(produtoBusiness.cadastrarProduto(dto.toDomain()));
     }
 
     @DeleteMapping("/{id}")
@@ -45,19 +40,17 @@ public class ProdutoController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ProdutoSaidaDTO buscarProdutoPorId(@PathVariable Long id) {
-        Produto produto = produtoBusiness.buscarProdutoPorId(id);
-        ProdutoSaidaDTO produtoSaidaDTO = new ProdutoSaidaDTO().fromDomain(produto);
-
-        return produtoSaidaDTO;
+        return new ProdutoSaidaDTO()
+            .fromDomain(produtoBusiness.buscarProdutoPorId(id));
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ProdutoSaidaDTO> buscarProdutoPorNome() {
-        List<Produto> produtos = produtoBusiness.buscarProdutos();
-        List<ProdutoSaidaDTO> produtosSaidaDTO = produtos.stream().map(produto -> new ProdutoSaidaDTO().fromDomain(produto)).toList();
-
-        return produtosSaidaDTO;
+        return produtoBusiness.buscarProdutos()
+            .stream()
+            .map(produto -> new ProdutoSaidaDTO().fromDomain(produto))
+            .toList();
     }
 
 }

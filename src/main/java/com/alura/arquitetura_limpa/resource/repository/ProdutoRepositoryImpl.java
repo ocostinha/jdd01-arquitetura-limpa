@@ -18,18 +18,14 @@ public class ProdutoRepositoryImpl implements ProdutoRepository {
 
     @Override
     public Produto cadastrarProduto(final Produto produto) {
-        ProdutoEntity produtoASerCadastrado = new ProdutoEntity().fromDomain(produto);
-        ProdutoEntity produtoCadastrado = produtoJpaRepository.save(produtoASerCadastrado);
-        Produto produtoConvertido = produtoCadastrado.toDomain();
-
-        return produtoConvertido;
+        return produtoJpaRepository.save(new ProdutoEntity().fromDomain(produto)).toDomain();
     }
 
     @Override
     public Optional<Produto> buscarPorSKU(final String sku) {
-        Optional<ProdutoEntity> buscaPorSku = produtoJpaRepository.findBySku(sku);
-
-        return buscaPorSku.map(ProdutoEntity::toDomain);
+        return produtoJpaRepository
+            .findBySku(sku)
+            .map(ProdutoEntity::toDomain);
     }
 
     @Override
@@ -39,16 +35,18 @@ public class ProdutoRepositoryImpl implements ProdutoRepository {
 
     @Override
     public Optional<Produto> buscarProdutoPorId(final Long id) {
-        Optional<ProdutoEntity> produtoConsultado = produtoJpaRepository.findById(id);
-
-        return produtoConsultado.map(ProdutoEntity::toDomain);
+        return produtoJpaRepository
+            .findById(id)
+            .map(ProdutoEntity::toDomain);
     }
 
     @Override
     public List<Produto> buscarProdutos() {
-        List<ProdutoEntity> produtosConsultados = produtoJpaRepository.findAll();
-
-        return produtosConsultados.stream().map(ProdutoEntity::toDomain).toList();
+        return produtoJpaRepository
+            .findAll()
+            .stream()
+            .map(ProdutoEntity::toDomain)
+            .toList();
     }
 
 }

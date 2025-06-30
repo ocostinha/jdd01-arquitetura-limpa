@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class ProdutoBusinessImpl implements ProdutoBusiness {
@@ -17,13 +16,10 @@ public class ProdutoBusinessImpl implements ProdutoBusiness {
 
     @Override
     public Produto cadastrarProduto(final Produto produto) {
-        if (produtoRepository.buscarPorSKU(produto.getSku()).isPresent()) {
-            throw new RuntimeException("Produto já cadastrado");
-        }
+        produtoRepository.buscarPorSKU(produto.getSku())
+            .orElseThrow(() -> new RuntimeException("Produto já cadastrado"));
 
-        Produto produtoSalvo = produtoRepository.cadastrarProduto(produto);
-
-        return produtoSalvo;
+        return produtoRepository.cadastrarProduto(produto);
     }
 
     @Override
@@ -33,20 +29,13 @@ public class ProdutoBusinessImpl implements ProdutoBusiness {
 
     @Override
     public Produto buscarProdutoPorId(final Long id) {
-        Optional<Produto> produtoConsultado = produtoRepository.buscarProdutoPorId(id);
-
-        if (produtoConsultado.isEmpty()){
-            throw new RuntimeException("Produto não encontrado");
-        }
-
-        return produtoConsultado.get();
+        return produtoRepository.buscarProdutoPorId(id)
+            .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
     }
 
     @Override
     public List<Produto> buscarProdutos() {
-        List<Produto> produtosConsultados = produtoRepository.buscarProdutos();
-
-        return produtosConsultados;
+        return produtoRepository.buscarProdutos();
     }
 
 }
