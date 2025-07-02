@@ -17,7 +17,9 @@ public class ProdutoBusinessImpl implements ProdutoBusiness {
     @Override
     public Produto cadastrarProduto(final Produto produto) {
         produtoRepository.buscarPorSKU(produto.getSku())
-            .orElseThrow(() -> new RuntimeException("Produto já cadastrado"));
+            .ifPresent(_ -> {
+                throw new RuntimeException("Produto já cadastrado");
+            });
 
         return produtoRepository.cadastrarProduto(produto);
     }
